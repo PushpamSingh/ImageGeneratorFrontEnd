@@ -4,18 +4,41 @@ import { useNavigate } from "react-router-dom";
 import Login from "./Login";
 import SignUp from "./Signup";
 import { delay, motion } from "motion/react";
+import { useAuthState } from "../Zustand/useAuthState";
+import { useGetUser } from "../Hooks/UsegetUser";
 
 const Home = () => {
   const navigate = useNavigate();
-  const [AuthState, setAuthState] = useState("");
+  const {authState,setAuthState}=useAuthState()
+  // console.log(authState);
+  const {authUser,isLoading}=useGetUser();
+  const isAuthuser=Boolean(authUser)
+
+  const handleGenerateBtn=()=>{
+    if(isAuthuser){
+      setAuthState("")
+      navigate('/result')
+    }else{
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+       setAuthState(""); 
+    setTimeout(() => {
+      setAuthState("Login");
+    }, 0);
+    }
+  }
   return (
     <>
-      {AuthState === "Login" ? (
-        <Login />
-      ) : AuthState === "Signup" ? (
-        <SignUp />
-      ) : null}
+      {(authState ==='Login' || authState === 'Signup') &&
+        <>
+          {authState==='Login' ? <Login/> : <SignUp/>}
+        </>
+      }
 
+{/* authState === "Login" ? (
+        <Login />
+      ) : authState === "Signup" ? (
+        <SignUp />
+      ) : null */}
       <motion.header
         className="w-full h-screen flex justify-center items-center p-4 flex-col gap-4 -mt-14"
         initial={{ opacity: 0, y: 100 }}
@@ -56,7 +79,7 @@ const Home = () => {
 
         <motion.button
           className="btn btn-neutral py-6 px-10 rounded-full"
-          onClick={() => navigate("/result")}
+          onClick={handleGenerateBtn}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           initial={{ opacity: 0 }}
@@ -65,6 +88,7 @@ const Home = () => {
             default: { duration: 0.5 },
             opacity: { delay: 0.8, duration: 1 },
           }}
+          
         >
           <span>Generate</span>
           <img src={assets.star_group} alt="" width={20} />
@@ -282,7 +306,7 @@ const Home = () => {
                 whileInView={{ opacity: 1 }}
                 transition={{default:{delay:0.5},opacity:{ delay: 0.6, duration: 0.8 }}}
               className="btn btn-neutral py-6 px-10 rounded-full"
-              onClick={() => navigate("/result")}
+              onClick={handleGenerateBtn}
             >
               <span>Generate</span>
               <img src={assets.star_group} alt="" width={20} />

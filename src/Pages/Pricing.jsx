@@ -2,10 +2,26 @@ import { ImageIcon, StepBack } from "lucide-react";
 import React, { useState } from "react";
 import { plans } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { useAuthState } from "../Zustand/useAuthState";
+import { useGetUser } from "../Hooks/UsegetUser";
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const {authUser}=useGetUser();
+  const isAuthUser=Boolean(authUser)
+  const {authState,setAuthState}=useAuthState()
   const [isUser, setUser] = useState(false);
+  const handleGetstarted=(e)=>{
+    e.preventDefault();
+   if(isAuthUser){
+    setAuthState("")
+    navigate("/")
+    setAuthState("")
+   }else{
+     navigate("/")
+    setAuthState("Login")
+   }
+  }
   return (
     <>
       <button className="btn btn-info" onClick={() => navigate(-1)}>
@@ -33,7 +49,7 @@ const Pricing = () => {
                   <span className="text-base-content/50">/{plan.credits}credits</span>
                 </p>
                 {!isUser ? (
-                  <button className="btn btn-neutral py-3 px-6 mt-4 w-full" onClick={() => navigate("/")}>
+                  <button className="btn btn-neutral py-3 px-6 mt-4 w-full" onClick={(e) => handleGetstarted(e)}>
                     Get Started
                   </button>
                 ) : (

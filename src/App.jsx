@@ -1,10 +1,16 @@
 import {Toaster} from 'react-hot-toast'
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
+import {createBrowserRouter, Navigate, RouterProvider} from 'react-router-dom'
 import Layout from './Layout/Layout'
 import Home from './Pages/Home'
 import Pricing from './Pages/Pricing'
 import Result from './Pages/Result'
+import { useGetUser } from './Hooks/UsegetUser'
 
+
+function App() {
+  const {authUser,isLoading,error}=useGetUser()
+
+const isAuthuser=Boolean(authUser)
 const router=createBrowserRouter([
   {
     path:"/",
@@ -20,13 +26,18 @@ const router=createBrowserRouter([
       },
       {
         path:"/result",
-        element:<Result/>,
+        element:(
+          isAuthuser ? (
+            <Result/>
+          ):(
+            <Navigate to="/"/>
+          )
+        ),
       }
     ]
   }
   
 ])
-function App() {
   return <>
    <RouterProvider router={router}/>
    <Toaster/>

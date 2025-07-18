@@ -5,7 +5,7 @@ import Footers from './Footers'
 
 const Layout = () => {
   return (
-    <div className='px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 min-h-screen w-full overflow-x-hidden font-[outfit]' data-theme='dark'>
+    <div className='px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32 min-h-screen w-full overflow-x-hidden font-[outfit]' data-theme='light'>
         <header>
           <Headers/>
         </header>
