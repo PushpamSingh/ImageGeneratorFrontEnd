@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "/api/v1/img" || `${import.meta.env.VITE_BACKEND_URL}/api/v1/img`,
+    baseURL:`${import.meta.env.VITE_BACKEND_URL}/api/v1/img`,
     withCredentials: true
 })
 const token = localStorage.getItem('token')
