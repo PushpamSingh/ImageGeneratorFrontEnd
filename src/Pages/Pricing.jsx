@@ -1,26 +1,98 @@
 import { ImageIcon, StepBack } from "lucide-react";
 import React, { useState } from "react";
 import { plans } from "../assets/assets";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import { useAuthState } from "../Zustand/useAuthState";
 import { useGetUser } from "../Hooks/UsegetUser";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast"
+import ImageService from "../BackendService/Image.service";
 
 const Pricing = () => {
-  const navigate = useNavigate();
+  const [planId,setPlanid]=useState({
+    planId:""
+  })
   const {authUser}=useGetUser();
-  const isAuthUser=Boolean(authUser)
   const {authState,setAuthState}=useAuthState()
-  const [isUser, setUser] = useState(false);
+  const [loadingPlanId, setLoadingPlanId] = useState(null);
+  const isAuthUser=Boolean(authUser)
+  const isUser=Boolean(authUser)
+  const navigate = useNavigate();
+
+  const queryClient=useQueryClient()
+  const {mutateAsync:PaymentMutation}=useMutation({
+    mutationFn:async()=>{
+      const response=await ImageService.PaymentRazorpay(planId);
+      return response || null
+    },
+    onSuccess:()=>{    
+      queryClient.invalidateQueries({queryKey:['authUser']})
+    }
+  })
+
+  const {mutateAsync:verifyRazorpayMutation}=useMutation({
+    mutationFn:async(Verifyresponse)=>{
+      const response=await ImageService.veriFyRazorpay(Verifyresponse);
+      return response || null
+    },
+    onSuccess:()=>{
+      queryClient.invalidateQueries({queryKey:['authUser']})
+      toast.success("Credits Added",{style:{fontSize:'16px'}})
+      navigate("/")
+    }
+  })
   const handleGetstarted=(e)=>{
     e.preventDefault();
-   if(isAuthUser){
-    setAuthState("")
+    if(isAuthUser){
+      setAuthState("")
     navigate("/")
     setAuthState("")
    }else{
      navigate("/")
     setAuthState("Login")
    }
+  }
+  const initPayment=(order)=>{
+    try {
+      const options={
+        key: import.meta.env.VITE_RAZORPAY_API_KEY,
+        amount:order.amount,
+        currency:order.currency,
+        name:'Credits Payment',
+        description:'Credits Payment',
+        order_id:order.id,
+        receipt:order.receipt,
+        handler:async(response)=>{
+          verifyRazorpayMutation(response)
+        }
+      }
+      const rzp=new window.Razorpay(options)
+      rzp.open()
+    } catch (error) {
+     toast.error(error.message,{style:{fontSize:'16px'}})
+    }
+  }
+  const Payment=async(planId)=>{
+    try {
+      if(!authUser){
+        setAuthState('Login')
+      }      
+      setAuthState("")
+      setLoadingPlanId(planId)
+      setPlanid({...planId,planId:planId});
+     const response = await PaymentMutation()
+    //  console.log("paymentData: ",response);
+      
+      if(response?.success){
+        initPayment(response.data)
+        // console.log("PalnIdl ",planId);
+      }
+      setLoadingPlanId(null)
+
+    } catch (error) {
+      setLoadingPlanId(null)
+      toast.error(error.message,{style:{fontSize:'16px'}})
+    }
   }
   return (
     <>
@@ -45,7 +117,7 @@ const Pricing = () => {
                 <h3 className="text-xl font-semibold">{plan.id}</h3>
                 <p className="text-base-content/70 mt-2">{plan.desc}</p>
                 <p className="mt-4">
-                  <span className="text-2xl">${plan.price}</span>
+                  <span className="text-2xl">₹{plan.price}</span>
                   <span className="text-base-content/50">/{plan.credits}credits</span>
                 </p>
                 {!isUser ? (
@@ -53,8 +125,16 @@ const Pricing = () => {
                     Get Started
                   </button>
                 ) : (
-                  <button className="btn btn-neutral py-3 px-6 mt-4 w-full">
-                    Purchase
+                  <button onClick={(e)=>{Payment(plan.id)}} className="btn btn-neutral py-3 px-6 mt-4 w-full">
+                    {
+                      loadingPlanId === plan.id ? (
+                        <span className="loading loading-spinner loading-xs"></span>
+                      ):(
+                        "Purchase"
+                      )
+      
+                    }
+                  
                   </button>
                 )}
               </div>
