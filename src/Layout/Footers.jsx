@@ -15,13 +15,13 @@ const Footers = () => {
       <p className='text-xs sm:text-xl text-base-content/40'>All right reserved. Copyright @imagify</p>
      </div>
       <div className='flex items-center gap-4'>
-        <Link to="#" className='border-1 border-base-content/70 rounded-full p-2 hover:scale-105 transition-all duration-300'>
+        <Link to="https://www.facebook.com/pushpam.kumar.1428921/" className='border-1 border-base-content/70 rounded-full p-2 hover:scale-105 transition-all duration-300'>
           <FacebookIcon className='size-4 sm:size-6 text-info cursor-pointer' />  
         </Link>
-        <Link to="#" className='border-1 border-base-content/70 rounded-full p-2 hover:scale-105 transition-all duration-300'>
+        <Link to="https://x.com/Undrrtd__?t=VKaZ_r6l5VVueIVr21Xhiw&s=09" className='border-1 border-base-content/70 rounded-full p-2 hover:scale-105 transition-all duration-300'>
           <TwitterIcon className='size-4 sm:size-6 text-info cursor-pointer' />  
           </Link>
-        <Link to="#" className='border-1 border-base-content/70 rounded-full p-2 hover:scale-105 transition-all duration-300'>
+        <Link to="https://www.instagram.com/undrrtd__/" className='border-1 border-base-content/70 rounded-full p-2 hover:scale-105 transition-all duration-300'>
           <InstagramIcon className='size-4 sm:size-6 text-info cursor-pointer' />  
           </Link>
       </div>
